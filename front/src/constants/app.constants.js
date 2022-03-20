@@ -1,0 +1,1 @@
+export const SET_SELECTED_APP = "set_selected_app";

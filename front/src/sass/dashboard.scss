@@ -1,0 +1,36 @@
+.app-container {
+    background: rgb(55,44,238);
+    background: linear-gradient(180deg, rgba(55,44,238,1) 0%, rgba(0,212,255,1) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .card-container {
+        border-radius: 10px;
+        background: lightblue;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        justify-content: center;
+
+        &:hover {
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.486);
+            transition: all 0.1s ease-in-out;
+        }
+
+        &-icon {
+            width: 70px;
+        }
+        &-title {
+            font-size: 0.8rem;
+            text-shadow: 0 0 5px rgb(32, 32, 32);
+            font-weight: 400;
+            position: absolute;
+            bottom: -20px;
+        }
+    }
+}

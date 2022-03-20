@@ -1,0 +1,118 @@
+.tictactoe-game-container-configurator {
+    &-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1em;
+        flex-direction: column;
+        span {
+            margin-top: 10px;
+        }
+        &-picture {
+            width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+    &-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        button {
+            margin: 5px !important;
+            display: flex;
+            width: 100%;
+        }
+    }
+}
+
+.tictactoe-game-container {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex-basis: 100%;
+    .restart-btn {
+        margin: 1em 0; 
+    }
+}
+
+.score-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+}
+
+.tictactoe-game-grid {
+    border: 1px solid rgba(0, 0, 0, 0.082);
+    height: 50vh;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    &-row {
+        flex: 1;
+        flex-direction: column;
+        height: calc(50vh / 3 - 2px);
+        width: 100%;
+        &-cel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .pointer {
+                font-family: "Indie Flower", cursive;
+                font-size: 5rem;
+                color: black;
+            }
+            &.fill {
+                cursor: not-allowed;
+            }
+        }
+        &:first-child {
+            .tictactoe-game-grid-row-cel {
+                &:first-child {
+                    flex: 1;
+                    border: 1px solid black;
+                    height: 100%;
+                    border-radius: 10px 0 0 0;
+                }
+                &:last-child {
+                    flex: 1;
+                    border: 1px solid black;
+                    height: 100%;
+                    border-radius: 0 0 0 10px;
+                }
+            }
+        }
+        &:last-child {
+            .tictactoe-game-grid-row-cel {
+                &:first-child {
+                    flex: 1;
+                    border: 1px solid black;
+                    height: 100%;
+                    border-radius: 0 10px 0 0;
+                }
+                &:last-child {
+                    flex: 1;
+                    border: 1px solid black;
+                    height: 100%;
+                    border-radius: 0 0 10px 0;
+                }
+            }
+        }
+        &-cel {
+            flex: 1;
+            border: 1px solid black;
+            height: 100%;
+            &:hover {
+                background: #dcdcdc5b;
+            }
+        }
+    }
+}
