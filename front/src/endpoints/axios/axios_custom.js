@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getTokenAndRefreshToken, persistTokenAndRefreshToken } from "../../utils/persist.login";
-import { refreshToken } from "../authentication/authentication";
+import { refreshToken } from "../app/auth/auth";
 const instance = axios.create({
     baseURL: `${process.env.REACT_APP_HOSTNAME || process.env.REACT_APP_ENDPOINT}`,
     headers: {

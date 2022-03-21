@@ -9,7 +9,7 @@ class Socket {
             this.io = io;
             
             this.io.on('connection', socket => {
-                socket.emit('test', socket.id);
+                setInterval(() => socket.emit('test', socket.id), 800);
             })
         }
     }

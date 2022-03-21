@@ -1,5 +1,6 @@
 const beautifierConsole = require("../../utils/beautifierConsole");
 const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
 const { MongoClient } = require('mongodb');
 
 class Core {
@@ -28,10 +29,9 @@ class Core {
     }
 
 
-    jwtEncode(payload) {
+    jwtEncode() {
         return new Promise((resolve, reject) => {
-            if (!payload || !payload._id) return reject('Missing parameter in payload #jwtEncode on coreCtrl.js');
-            return resolve(jwt.sign({ _id: payload._id }, process.env.JWT_PASS, {
+            return resolve(jwt.sign({ _id: uuid.v4() }, process.env.JWT_PASS, {
                 expiresIn: '30m'
             }));
         })
@@ -76,7 +76,11 @@ class Core {
     authenticateRefreshToken = (req, res, next) => {
         return new Promise((resolve, reject) => {
             const authHeader = req.headers['authorization']
+
+            console.log('auth header :', authHeader)
             let token = authHeader && authHeader.split(' ')[1]
+
+            console.log('token : ', token)
             if (token == null) return reject(401)
             // If many token on header, get the first only
 
