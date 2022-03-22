@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'underscore';
 import { authenticate } from '../../../endpoints/app/auth/auth';
-import { getTokenAndRefreshToken } from '../../../utils/persist.login';
+import { getTokenAndRefreshToken, persistTokenAndRefreshToken } from '../../../utils/persist.login';
 import { createGame, joinGame } from '../../../endpoints/app/games/tictactoe';
 
 const Configurator = ({ app, onSelected, context, ...props }) => {
@@ -25,8 +25,10 @@ const Configurator = ({ app, onSelected, context, ...props }) => {
             return await joinGame(id);
         }
 
-        if (!getTokenAndRefreshToken()['accessToken'] && !getTokenAndRefreshToken()['refreshToken']) {
+        if (!getTokenAndRefreshToken()['accessToken']) {
             const auth = await authenticate();
+
+            persistTokenAndRefreshToken(auth.accessToken, auth.refreshToken );
 
             if (auth?.accessToken) {
                 if (mode === 'MP-JOIN') await join('test');
