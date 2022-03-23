@@ -42,3 +42,29 @@ export const checkPossibleMarker = (arrayGame) => {
         }
     }
 }
+
+export const getCaseToWin = (arrayGame, player) => {
+    const game = Object.entries(arrayGame);
+    let markerOfPlayer = [];
+
+    for(let i = 0; i < game.length; i++) {
+        if (game[i].includes(player)) {
+            markerOfPlayer.push({ [game[i][0]]: player });
+        }
+
+        if (i + 1 === game.length) {
+            for (let j = 0; j < possibleWin.length; j++) {
+                let findKey = possibleWin[j];
+                for (let k = 0; k < markerOfPlayer.length; k++) {
+                    let key = Object.entries(markerOfPlayer[k]);
+                    if (findKey.indexOf(key[0][0]) !== -1) {
+                        findKey = findKey.filter(keyMarker => keyMarker !== key[0][0]);
+                        if (findKey.length === 1) {
+                            return findKey;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

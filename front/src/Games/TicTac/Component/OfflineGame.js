@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { checkPossibleMarker, checkWin } from '../Core/engine';
+import { checkPossibleMarker, checkWin, getCaseToWin } from '../Core/engine';
 import { withRouter } from 'react-router-dom';
 import _ from 'underscore';
 import { connect } from 'react-redux';
@@ -80,7 +80,7 @@ const OfflineGame = ({ app, ...props }) => {
             };
 
             if (!endGame) {
-                setTimeout(() => setAiPointTrigger(__point), _.random(3000));
+                setTimeout(() => setAiPointTrigger(__point), _.random(1000));
             }
         } else {
             setAiPointTrigger(null);
@@ -120,7 +120,26 @@ const OfflineGame = ({ app, ...props }) => {
                     return;
                 }
 
-                return Object.keys(possibleMarker[pointRandom])[0];
+                let predicted = undefined;
+
+                if (typeof getCaseToWin(point, 'me') !== 'undefined') {
+                    predicted = getCaseToWin(point, 'me')[0];
+                }
+
+
+                if (Object.keys(point).indexOf(predicted) !== -1) {
+                    let index = 0;
+                    for (let i = 0; i < Object.keys(possibleMarker).length; i++) {
+                        index = i;
+                        if (Object.keys(Object.values(possibleMarker)[i])[0] === Object.keys(point)[Object.keys(point).indexOf(predicted)]) {
+                            return Object.keys(possibleMarker[index])[0];
+                        }
+                    }
+                    return Object.keys(possibleMarker[pointRandom])[0];
+                } else {
+                    console.log(possibleMarker, pointRandom)
+                    return Object.keys(possibleMarker[pointRandom])[0];
+                }
             }
         }
     }
