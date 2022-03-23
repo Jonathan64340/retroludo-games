@@ -137,7 +137,6 @@ const OfflineGame = ({ app, ...props }) => {
                     }
                     return Object.keys(possibleMarker[pointRandom])[0];
                 } else {
-                    console.log(possibleMarker, pointRandom)
                     return Object.keys(possibleMarker[pointRandom])[0];
                 }
             }
