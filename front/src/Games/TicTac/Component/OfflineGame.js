@@ -30,14 +30,15 @@ const OfflineGame = ({ app, ...props }) => {
 
     const [aiPointTrigger, setAiPointTrigger] = useState(null);
 
-    // useEffect(() => {
-    //     setPlayer(getRandomPlayer());
-    // }, []);
+    useEffect(() => {
+        setPlayer(getRandomPlayer());
+    }, []);
 
     useEffect(() => {
         changeUserRound();
 
         const win = checkWin(point);
+
         if (win) {
             setEndGame(true);
             let scoreMe = app?.selected_game?.score?.me || 0;
@@ -74,10 +75,17 @@ const OfflineGame = ({ app, ...props }) => {
 
     useEffect(() => {
         if (player === 'ai') {
-            const __point = getRandomPoint();
-            if (!__point) {
-                return;
-            };
+            const pointValue = Object.values(point);
+            const pointKey = Object.keys(point);
+
+            const __point = (() => {
+                if (pointValue.filter(p => p === null).length > 1) {
+                    return getRandomPoint();
+                } else {
+                    const index = pointValue.indexOf(null);
+                    return pointKey[index];
+                }
+            })();
 
             if (!endGame) {
                 setTimeout(() => setAiPointTrigger(__point), _.random(1000));
@@ -112,7 +120,7 @@ const OfflineGame = ({ app, ...props }) => {
     const getRandomPoint = () => {
         if (player === 'ai') {
             if (checkPossibleMarker(point).length) {
-                const pointRandom = _.random(checkPossibleMarker(point).length - 1);
+                const pointRandom = checkPossibleMarker(point).length === 1 ? checkPossibleMarker(point)[0] : _.random(checkPossibleMarker(point).length - 1);
                 const possibleMarker = checkPossibleMarker(point);
 
                 if (possibleMarker.length === 0) {
@@ -122,16 +130,20 @@ const OfflineGame = ({ app, ...props }) => {
 
                 let predicted = undefined;
 
-                if (typeof getCaseToWin(point, 'me') !== 'undefined') {
+                if (typeof getCaseToWin(point, 'ai') !== 'undefined') {
+                    predicted = getCaseToWin(point, 'ai')[0];
+                }
+
+                if (!predicted && typeof getCaseToWin(point, 'me') !== 'undefined') {
                     predicted = getCaseToWin(point, 'me')[0];
                 }
 
-
-                if (Object.keys(point).indexOf(predicted) !== -1) {
+                if (Object.keys(point).indexOf(predicted) !== -1 && Object.entries(point).filter(e => e[0] === predicted)[0][1] === null) {
                     let index = 0;
                     for (let i = 0; i < Object.keys(possibleMarker).length; i++) {
                         index = i;
                         if (Object.keys(Object.values(possibleMarker)[i])[0] === Object.keys(point)[Object.keys(point).indexOf(predicted)]) {
+                            predicted = null;
                             return Object.keys(possibleMarker[index])[0];
                         }
                     }
