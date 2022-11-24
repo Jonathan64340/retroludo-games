@@ -1,12 +1,16 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { useLocation, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'underscore';
 import { authenticate } from '../../../endpoints/app/auth/auth';
 import { getTokenAndRefreshToken, persistTokenAndRefreshToken } from '../../../utils/persist.login';
 import { createGame, joinGame } from '../../../endpoints/app/games/tictactoe';
+import { socket } from '../../../utils/socket';
+import { setUserApp } from '../../../actions/app.actions';
 
-const Configurator = ({ app, onSelected, context, ...props }) => {
+const Configurator = ({ app, user, onSelected, context, ...props }) => {
+    const { search } = useLocation();
+    
     const goHome = () => {
         if (context) {
             onSelected(null);
@@ -17,30 +21,46 @@ const Configurator = ({ app, onSelected, context, ...props }) => {
 
     const enableOnline = async (mode) => {
 
-        const create = async (payload) => {
-            return await createGame(payload);
+        const create = async () => {
+            socket.emit('create', { socket: { id: socket.id } })
+            const onCreate = socket.on('on-create', (data) => {
+                onSelected(mode);
+                console.log(data)
+                props.dispatch(setUserApp({ ...user, currentRoomId: data?.roomId }));
+                onCreate.off();
+            });
         }
 
-        const join = async (id) => {
-            return await joinGame(id);
+        const join = async () => {
+            const query = new URLSearchParams(search);
+            const id = query.get('roomId');
+            console.log(id)
+
+            socket.emit('join', { roomId: 1, socket: { id: socket.id } })
+            const onJoin = socket.on('on-join', (data) => {
+                onSelected(mode);
+                console.log(data)
+                props.dispatch(setUserApp({ ...user, currentRoomId: data?.roomId }));
+                onJoin.off();
+            });
         }
 
         if (!getTokenAndRefreshToken()['accessToken']) {
             const auth = await authenticate();
 
-            persistTokenAndRefreshToken(auth.accessToken, auth.refreshToken );
+            persistTokenAndRefreshToken(auth.accessToken, auth.refreshToken);
 
             if (auth?.accessToken) {
-                if (mode === 'MP-JOIN') await join('test');
-                if (mode === 'MP-CREATE') await create({});
+                if (mode === 'MP-JOIN') await join();
+                if (mode === 'MP-CREATE') await create();
 
-                onSelected(mode);
+                // onSelected(mode);
             }
         } else {
-            if (mode === 'MP-JOIN') await join('test');
-            if (mode === 'MP-CREATE') await create({});
+            if (mode === 'MP-JOIN') await join();
+            if (mode === 'MP-CREATE') await create();
 
-            onSelected(mode);
+            // onSelected(mode);
         }
     }
 
@@ -59,8 +79,8 @@ const Configurator = ({ app, onSelected, context, ...props }) => {
                     ) :
                     (
                         <>
-                            <button className='btn' onClick={() => enableOnline('AI')}>Play with computer</button>
-                            <button className='btn' onClick={() => enableOnline('MP')}>Play with friend</button>
+                            <button className='btn' onClick={() => onSelected('AI')}>Play with computer</button>
+                            <button className='btn' onClick={() => onSelected('MP')}>Play with friend</button>
                         </>
                     )
             }
@@ -70,5 +90,5 @@ const Configurator = ({ app, onSelected, context, ...props }) => {
     </div >)
 }
 
-const mapStateToProps = ({ app }) => ({ app });
+const mapStateToProps = ({ app, user }) => ({ app, user });
 export default _.compose(connect(mapStateToProps), withRouter)(Configurator);

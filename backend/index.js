@@ -34,13 +34,13 @@ const Core = require('./controllers/core/coreCtrl');
 
 // Define core controller
 const CoreClass = new Core();
+
 CoreClass.init()
   .then(db => {
-    routes.init(db, io);
+    routes.init('db', io);
 
     // Define routes
     app.use(routes.router);
-
   })
 
 const http = require('http').createServer(app);
@@ -54,7 +54,7 @@ const io = require('socket.io')(http, {
 
 
 // Listen server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5748;
 http.listen(4000, () => beautifierLogs('fgBlue', `This socketIo server is launched on port ${4000}`));
 app.listen(port, () => beautifierLogs('fgBlue', `This server is launched on port ${process.env.PORT || 5000}`));
 

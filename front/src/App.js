@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { gameList, gameRoutes } from './Games';
 import { connect } from 'react-redux';
 import notFoundPage from './pages/not-found/not-found.page';
-import { setSelectedApp } from './actions/app.actions';
+import { setSelectedApp, setUserApp } from './actions/app.actions';
+import { io } from 'socket.io-client';
 
-const App = ({ app, ...props }) => {
+const App = ({ app, user, ...props }) => {
     const [context, setContext] = useState(null);
+
+    useEffect(() => {
+        props.dispatch(setUserApp({ payload: { socketIO: io('http://localhost:4000') } }))
+    }, [])
 
     const DisplayGame = ({ replaceUrlBy, history }) => {
 
@@ -24,17 +29,18 @@ const App = ({ app, ...props }) => {
         }
 
         return (
-        <>
-            {
-                gameList.map((game, index) => (
-                    <div className='card-container' key={index} onClick={() => goTo({ ...game })}>
-                        <img src={`${app?.base_url}/${game.icon}`} alt={game?.title} className='card-container-icon' />
-                        <span className='card-container-title'>{game?.title}</span>
-                    </div>
-                ))
-            }
-        </>
-    )}
+            <>
+                {
+                    gameList.map((game, index) => (
+                        <div className='card-container' key={index} onClick={() => goTo({ ...game })}>
+                            <img src={`${app?.base_url}/${game.icon}`} alt={game?.title} className='card-container-icon' />
+                            <span className='card-container-title'>{game?.title}</span>
+                        </div>
+                    ))
+                }
+            </>
+        )
+    }
 
     return <div className='app-container'>
         <Router>
@@ -53,6 +59,6 @@ const App = ({ app, ...props }) => {
     </div>
 };
 
-const mapStateToProps = ({ app }) => ({ app });
+const mapStateToProps = ({ app, user }) => ({ app, user });
 const mapDispatchToProps = dispatch => ({ dispatch });
 export default connect(mapStateToProps, mapDispatchToProps)(App);

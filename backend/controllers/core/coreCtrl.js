@@ -1,7 +1,7 @@
 const beautifierConsole = require("../../utils/beautifierConsole");
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
-const { MongoClient } = require('mongodb');
+// const { MongoClient } = require('mongodb');
 
 class Core {
 
@@ -10,22 +10,23 @@ class Core {
     dbName = '';
 
     async init(url = process.env.DB_URL, dbname = process.env.DB_NAME) {
-        return new Promise(async (resolve, reject) => {
-            if (typeof url === undefined || typeof dbname === 'undefined') return;
-            this.client = new MongoClient(url);
-            this.dbName = dbname;
+        return Promise.resolve();
+        // return new Promise(async (resolve, reject) => {
+        //     if (typeof url === undefined || typeof dbname === 'undefined') return;
+        //     this.client = new MongoClient(url);
+        //     this.dbName = dbname;
 
-            try {
-                await this.client.connect();
-                beautifierConsole('bgGreen', 'Successfully connected on DB');
-                this.db = this.client.db(this.dbName);
-                resolve(this.db);
-            } catch (err) {
-                beautifierConsole('bgRed', `Error loggin on DB ${err}`);
-                reject(err);
-            }
+        //     try {
+        //         await this.client.connect();
+        //         beautifierConsole('bgGreen', 'Successfully connected on DB');
+        //         this.db = this.client.db(this.dbName);
+        //         resolve(this.db);
+        //     } catch (err) {
+        //         beautifierConsole('bgRed', `Error loggin on DB ${err}`);
+        //         reject(err);
+        //     }
 
-        });
+        // });
     }
 
 

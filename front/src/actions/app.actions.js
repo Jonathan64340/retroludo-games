@@ -1,8 +1,13 @@
-import { SET_SELECTED_APP } from "../constants/app.constants";
+import { SET_SELECTED_APP, SET_USER } from "../constants/app.constants";
 
 const setSelectedApp = (payload) => ({
     type: SET_SELECTED_APP,
     ...payload
 });
 
-export { setSelectedApp };
+const setUserApp = (payload) => ({
+    type: SET_USER,
+    ...payload
+})
+
+export { setSelectedApp, setUserApp };
