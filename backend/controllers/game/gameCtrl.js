@@ -9,17 +9,18 @@ class GameCtrl extends Core {
     init(db, io) {
         if (db) this.db = db;
         if (io) this.io = io;
-        
+
         this.io.on('connection', (socket) => {
             if (socket) this.socket = socket;
 
             this.socket.on('create', () => {
                 // Get all rooms available length
                 let roomId = Array.from(this.socket.adapter.rooms.entries()).length + 1;
+                this.socket.url = roomId;
                 this.createGame({ roomId: `room-${roomId}` });
             });
             this.socket.on('join', (data) => {
-                this.joinGame({ roomId: `room-${data.roomId}` });
+                this.joinGame({ roomId: data.roomId });
             });
 
             this.socket.on('disconnect', (raison) => {
@@ -39,7 +40,7 @@ class GameCtrl extends Core {
     createGame({ roomId }) {
         if (this.socket) {
             this.socket.join(roomId);
-            this.io.to(this.socket.id).emit('on-create', { roomId });
+            this.io.to(this.socket.id).emit('on-create', { roomId, url: `http://localhost:3000/tictactoe?roomId=${roomId}` });
             this.io.to(roomId).emit('room-info', { message: `Player ${this.socket.id} joined!` });
         }
     }

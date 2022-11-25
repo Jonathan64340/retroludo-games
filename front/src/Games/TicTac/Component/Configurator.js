@@ -17,6 +17,13 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
             alert(message)
         })
 
+        const query = new URLSearchParams(search);
+        const roomId = query.get('roomId');
+
+        if (roomId) {
+            join(roomId)
+        }
+
         return () => {
             onError.off()
         }
@@ -31,28 +38,27 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
         }
     }
 
+    const join = async (roomId) => {
+        if (roomId) {
+            socket.emit('join', { roomId })
+            socket.on('on-join', (data) => {
+                onSelected('MP-JOIN');
+                console.log(data)
+                props.dispatch(setUserApp({ ...user, currentRoomId: roomId }));
+            });
+        }
+    }
+
     const enableOnline = async (mode) => {
 
         const create = async () => {
             socket.emit('create', {})
             socket.on('on-create', (data) => {
                 onSelected(mode);
-                props.dispatch(setUserApp({ ...user, currentRoomId: `room-${data?.roomId}` }));
+                props.dispatch(setUserApp({ ...user, currentRoomId: data?.roomId }));
             });
         }
 
-        const join = async () => {
-            const query = new URLSearchParams(search);
-            const id = query.get('roomId');
-            console.log(id)
-
-            socket.emit('join', { roomId: 10 })
-            socket.on('on-join', (data) => {
-                onSelected(mode);
-                console.log(data)
-                props.dispatch(setUserApp({ ...user, currentRoomId: `room-${data?.roomId}` }));
-            });
-        }
 
         if (!getTokenAndRefreshToken()['accessToken']) {
             const auth = await authenticate();

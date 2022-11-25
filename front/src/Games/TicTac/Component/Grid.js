@@ -55,5 +55,5 @@ const Grid = ({ onClick, player, aiPointTrigger, endGame, onRestart, app }) => {
     )
 }
 
-const mapStateToProps = ({ app }) => ({ app });
+const mapStateToProps = ({ app, user }) => ({ app, user });
 export default connect(mapStateToProps)(Grid);
