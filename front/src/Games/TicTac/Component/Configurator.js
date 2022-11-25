@@ -1,16 +1,28 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useLocation, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'underscore';
 import { authenticate } from '../../../endpoints/app/auth/auth';
 import { getTokenAndRefreshToken, persistTokenAndRefreshToken } from '../../../utils/persist.login';
 import { createGame, joinGame } from '../../../endpoints/app/games/tictactoe';
-import { socket } from '../../../utils/socket';
+import { SocketContext } from '../../../utils/socket';
 import { setUserApp } from '../../../actions/app.actions';
 
 const Configurator = ({ app, user, onSelected, context, ...props }) => {
     const { search } = useLocation();
-    
+    const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        const onError = socket.on('on-join-error', ({ message }) => {
+            alert(message)
+        })
+
+        return () => {
+            onError.off()
+        }
+
+    }, [])
+
     const goHome = () => {
         if (context) {
             onSelected(null);
@@ -22,12 +34,10 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
     const enableOnline = async (mode) => {
 
         const create = async () => {
-            socket.emit('create', { socket: { id: socket.id } })
-            const onCreate = socket.on('on-create', (data) => {
+            socket.emit('create', {})
+            socket.on('on-create', (data) => {
                 onSelected(mode);
-                console.log(data)
-                props.dispatch(setUserApp({ ...user, currentRoomId: data?.roomId }));
-                onCreate.off();
+                props.dispatch(setUserApp({ ...user, currentRoomId: `room-${data?.roomId}` }));
             });
         }
 
@@ -36,12 +46,11 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
             const id = query.get('roomId');
             console.log(id)
 
-            socket.emit('join', { roomId: 1, socket: { id: socket.id } })
-            const onJoin = socket.on('on-join', (data) => {
+            socket.emit('join', { roomId: 10 })
+            socket.on('on-join', (data) => {
                 onSelected(mode);
                 console.log(data)
-                props.dispatch(setUserApp({ ...user, currentRoomId: data?.roomId }));
-                onJoin.off();
+                props.dispatch(setUserApp({ ...user, currentRoomId: `room-${data?.roomId}` }));
             });
         }
 

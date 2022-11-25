@@ -8,9 +8,9 @@ class Socket {
             this.db = db;
             this.io = io;
             
-            this.io.on('connection', socket => {
-                setInterval(() => socket.emit('test', socket.id), 800);
-            })
+            // this.io.on('connection', socket => {
+            //     setInterval(() => socket.emit('test', socket.id), 800);
+            // })
         }
     }
 

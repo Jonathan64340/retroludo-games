@@ -4,14 +4,11 @@ import { gameList, gameRoutes } from './Games';
 import { connect } from 'react-redux';
 import notFoundPage from './pages/not-found/not-found.page';
 import { setSelectedApp, setUserApp } from './actions/app.actions';
-import { io } from 'socket.io-client';
+import Wrapper from './components/wrapper/Wrapper';
+import { socket, SocketContext } from './utils/socket';
 
 const App = ({ app, user, ...props }) => {
     const [context, setContext] = useState(null);
-
-    useEffect(() => {
-        props.dispatch(setUserApp({ payload: { socketIO: io('http://localhost:4000') } }))
-    }, [])
 
     const DisplayGame = ({ replaceUrlBy, history }) => {
 
@@ -43,19 +40,23 @@ const App = ({ app, user, ...props }) => {
     }
 
     return <div className='app-container'>
-        <Router>
-            <Switch>
-                <Route path="/" exact render={(props) => (
-                    <DisplayGame {...props} replaceUrlBy={context} />
-                )} />
-                {
-                    gameRoutes.map((game, index) => (
-                        <Route path={game?.path} exact={game?.exact} component={game?.component} key={index} />
-                    ))
-                }
-                <Route path="*" component={notFoundPage} />
-            </Switch>
-        </Router>
+        <SocketContext.Provider value={socket}>
+            <Wrapper>
+                <Router>
+                    <Switch>
+                        <Route path="/" exact render={(props) => (
+                            <DisplayGame {...props} replaceUrlBy={context} />
+                        )} />
+                        {
+                            gameRoutes.map((game, index) => (
+                                <Route path={game?.path} exact={game?.exact} component={game?.component} key={index} />
+                            ))
+                        }
+                        <Route path="*" component={notFoundPage} />
+                    </Switch>
+                </Router>
+            </Wrapper>
+        </SocketContext.Provider>
     </div>
 };
 

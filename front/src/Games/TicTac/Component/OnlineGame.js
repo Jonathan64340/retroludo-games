@@ -1,17 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Grid from './Grid';
 import { connect } from 'react-redux';
-import { socket } from '../../../utils/socket';
+import { SocketContext } from '../../../utils/socket';
 
 const OnlineGame = ({ user }) => {
+    const socket = useContext(SocketContext);
 
     useEffect(() => {
-        console.log(socket.id)
-        socket.on('room-info', (data) => {
-            alert('test')
-            console.log('data')
-        })
+
+        socket.on('room-info', (data) => console.log(data.message));
+
+        // return () => {
+        //     socketEvent.off()
+        // }
     }, [])
+
 
     return (<Grid onClick={() => { }} />)
 }
