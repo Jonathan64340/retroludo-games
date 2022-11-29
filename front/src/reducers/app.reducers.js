@@ -18,7 +18,7 @@ export const app = (state = initialState, action) => {
     }
 }
 
-export const user = (state = {}, action) => {
+export const userApp = (state = {}, action) => {
     switch (action.type) {
         case SET_USER:
             return {

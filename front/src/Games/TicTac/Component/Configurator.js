@@ -4,11 +4,10 @@ import { connect } from 'react-redux';
 import _ from 'underscore';
 import { authenticate } from '../../../endpoints/app/auth/auth';
 import { getTokenAndRefreshToken, persistTokenAndRefreshToken } from '../../../utils/persist.login';
-import { createGame, joinGame } from '../../../endpoints/app/games/tictactoe';
 import { SocketContext } from '../../../utils/socket';
 import { setUserApp } from '../../../actions/app.actions';
 
-const Configurator = ({ app, user, onSelected, context, ...props }) => {
+const Configurator = ({ app, userApp, onSelected, context, ...props }) => {
     const { search } = useLocation();
     const socket = useContext(SocketContext);
 
@@ -40,11 +39,18 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
 
     const join = async (roomId) => {
         if (roomId) {
-            socket.emit('join', { roomId })
+            socket.emit('join', { roomId, username: userApp?.username })
             socket.on('on-join', (data) => {
                 onSelected('MP-JOIN');
                 console.log(data)
-                props.dispatch(setUserApp({ ...user, currentRoomId: roomId }));
+                props.dispatch(setUserApp({ ...userApp, roomId }));
+            });
+        } else {
+            socket.emit('join', { username: userApp?.username })
+            socket.on('on-join', (data) => {
+                onSelected('MP-JOIN');
+                console.log(data)
+                props.dispatch(setUserApp({ ...userApp, roomId: data.roomId }));
             });
         }
     }
@@ -52,10 +58,10 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
     const enableOnline = async (mode) => {
 
         const create = async () => {
-            socket.emit('create', {})
+            socket.emit('create', { username: userApp?.username })
             socket.on('on-create', (data) => {
                 onSelected(mode);
-                props.dispatch(setUserApp({ ...user, currentRoomId: data?.roomId }));
+                props.dispatch(setUserApp({ ...userApp, roomId: data?.roomId }));
             });
         }
 
@@ -95,7 +101,7 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
                     (
                         <>
                             <button className='btn' onClick={() => onSelected('AI')}>Play with computer</button>
-                            <button className='btn' onClick={() => onSelected('MP')}>Play with friend</button>
+                            <button className='btn' disabled={!userApp?.username} onClick={() => onSelected('MP')}>Play with friend</button>
                         </>
                     )
             }
@@ -105,5 +111,5 @@ const Configurator = ({ app, user, onSelected, context, ...props }) => {
     </div >)
 }
 
-const mapStateToProps = ({ app, user }) => ({ app, user });
+const mapStateToProps = ({ app, userApp }) => ({ app, userApp });
 export default _.compose(connect(mapStateToProps), withRouter)(Configurator);

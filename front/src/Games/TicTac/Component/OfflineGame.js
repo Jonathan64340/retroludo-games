@@ -166,6 +166,7 @@ const OfflineGame = ({ app, ...props }) => {
     }
 
     const handleSetCase = (payload) => {
+        console.log(payload)
         handleMarker(payload?.player, payload?.point, payload?.event, payload?.aiPlay);
     }
 

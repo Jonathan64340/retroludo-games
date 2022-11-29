@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import Configurator from './Component/Configurator';
 import OfflineGame from './Component/OfflineGame';
 import OnlineGame from './Component/OnlineGame';
+import { connect } from 'react-redux';
+import { setSelectedApp } from '../../actions/app.actions';
 
-const TicTacGame = () => {
+const TicTacGame = ({ app, ...props}) => {
     const [contextGame, setContextGame] = useState(null);
 
     const onSelected = (ctx) => {
+        if (ctx === 'AI' || ctx === 'MP-JOIN' || ctx === 'MP-CREATE') {
+            props.dispatch(setSelectedApp({ payload: {
+                in_game: true
+            }}))
+        }
         setContextGame(ctx);
     }
 
@@ -19,4 +26,6 @@ const TicTacGame = () => {
     </div>
 };
 
-export default TicTacGame;
+const mapStateToProps = ({ app }) => ({ app })
+const mapDispatchToProps = dispatch => ({ dispatch })
+export default connect(mapStateToProps, mapDispatchToProps)(TicTacGame);

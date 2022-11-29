@@ -1,58 +1,72 @@
 const Core = require('../core/coreCtrl');
+const { getRoomClients } = require('../core/roomsManager');
+const { createGame, joinGame } = require('./tictactoe/tictactoe');
 
 class GameCtrl extends Core {
 
     db = undefined;
-    io = undefined;
-    socket = undefined;
+    log = undefined;
 
     init(db, io) {
         if (db) this.db = db;
-        if (io) this.io = io;
+        
+        io.on('connection', (socket) => {
+            
+            if (!this.log) {
+                this.log = true
+                setInterval(() => {
+                    // console.log(getRooms(socket))
+                }, 1000)
+            }
+            // Titctactoe game
 
-        this.io.on('connection', (socket) => {
-            if (socket) this.socket = socket;
-
-            this.socket.on('create', () => {
+            socket.on('create', (data) => {
                 // Get all rooms available length
-                let roomId = Array.from(this.socket.adapter.rooms.entries()).length + 1;
-                this.socket.url = roomId;
-                this.createGame({ roomId: `room-${roomId}` });
+                let roomId = Array.from(socket.adapter.rooms.entries()).length + 1;
+                socket.roomId = roomId;
+                createGame({ io, socket, roomId: `room-${roomId}` });
             });
-            this.socket.on('join', (data) => {
-                this.joinGame({ roomId: data.roomId });
-            });
+            socket.on('join', (data) => {
 
-            this.socket.on('disconnect', (raison) => {
+                if (data.roomId) {
+                    joinGame({ io, socket, data: { roomId: data.roomId } });
+                } else {
+                    joinGame({ io, socket, data: { } })
+                }
+            });
+            socket.on('concurrentInfo', (data) => {
+                if (data.username) {
+                    io.to(data.concurentSocketId).emit('concurrentInfo', {
+                        username: data.username
+                    })
+                }
+            })
+            socket.on('on-marker', (data) => {
+                console.log(data)
+                const roomClients = getRoomClients(socket, data.roomId);
+                if (!roomClients) return;
+                const turnSid = Array.from(roomClients).filter(client => client != data?.socket?.id)[0];
+                io.to(data.roomId).emit('on-marker', { marker: data.marker, sid: data?.socket?.id, turn: turnSid, from: socket?.id });
+                io.to(data.roomId).emit('on-turn', { sid: turnSid })
+            })
+
+            socket.on('on-game-restart', (data) => {
+                console.log(data)
+                io.to(data.roomId).emit('on-game-restart', {})
+            })
+
+            socket.on('leave-room', (data) => {
+                console.log('leave room: ', data)
+                io.to(data.roomId).emit('on-leave-room', {
+                    socketId: socket.id
+                })
+            })
+
+            socket.on('disconnect', (raison) => {
                 console.log('disconnected ' + socket.id + ' + raison : ' + raison)
             })
 
         })
-    }
-
-    getRoomClientsNumber = (room) => this.socket.adapter.rooms.get(room) ? this.socket.adapter.rooms.get(room).size : undefined;
-
-    getRoomClients = (room) => this.socket.adapter.rooms.get(room);
-
-    getRooms = () => this.socket.adapter.rooms;
-
-
-    createGame({ roomId }) {
-        if (this.socket) {
-            this.socket.join(roomId);
-            this.io.to(this.socket.id).emit('on-create', { roomId, url: `http://localhost:3000/tictactoe?roomId=${roomId}` });
-            this.io.to(roomId).emit('room-info', { message: `Player ${this.socket.id} joined!` });
-        }
-    }
-
-    joinGame({ roomId }) {
-        if (this.socket && typeof this.getRoomClientsNumber(roomId) !== 'undefined' && this.getRoomClientsNumber(roomId) < 2) {
-            this.socket.join(roomId);
-            this.io.to(this.socket.id).emit('on-join', { roomId });
-            this.io.to(roomId).emit('room-info', { message: `Player ${this.socket.id} joined!` })
-        } else {
-            this.io.to(this.socket.id).emit('on-join-error', { message: 'Unable to connect to this game!' });
-        }
     }
 }
 

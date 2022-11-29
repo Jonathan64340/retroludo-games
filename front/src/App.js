@@ -7,7 +7,7 @@ import { setSelectedApp, setUserApp } from './actions/app.actions';
 import Wrapper from './components/wrapper/Wrapper';
 import { socket, SocketContext } from './utils/socket';
 
-const App = ({ app, user, ...props }) => {
+const App = ({ app, userApp, ...props }) => {
     const [context, setContext] = useState(null);
 
     const DisplayGame = ({ replaceUrlBy, history }) => {
@@ -39,9 +39,13 @@ const App = ({ app, user, ...props }) => {
         )
     }
 
+    const handleChangeUsername = (username) => {
+        props.dispatch(setUserApp({ payload: { username } }))
+    }
+
     return <div className='app-container'>
         <SocketContext.Provider value={socket}>
-            <Wrapper>
+            <Wrapper onChangeUsername={handleChangeUsername} app={app}>
                 <Router>
                     <Switch>
                         <Route path="/" exact render={(props) => (
@@ -60,6 +64,6 @@ const App = ({ app, user, ...props }) => {
     </div>
 };
 
-const mapStateToProps = ({ app, user }) => ({ app, user });
+const mapStateToProps = ({ app, userApp }) => ({ app, userApp });
 const mapDispatchToProps = dispatch => ({ dispatch });
 export default connect(mapStateToProps, mapDispatchToProps)(App);
