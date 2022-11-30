@@ -65,24 +65,26 @@ const Configurator = ({ app, userApp, onSelected, context, ...props }) => {
             });
         }
 
+        if (mode === 'MP-JOIN') await join();
+        if (mode === 'MP-CREATE') await create();
 
-        if (!getTokenAndRefreshToken()['accessToken']) {
-            const auth = await authenticate();
+        // if (!getTokenAndRefreshToken()['accessToken']) {
+        //     const auth = await authenticate();
 
-            persistTokenAndRefreshToken(auth.accessToken, auth.refreshToken);
+        //     persistTokenAndRefreshToken(auth.accessToken, auth.refreshToken);
 
-            if (auth?.accessToken) {
-                if (mode === 'MP-JOIN') await join();
-                if (mode === 'MP-CREATE') await create();
+        //     if (auth?.accessToken) {
+        //         if (mode === 'MP-JOIN') await join();
+        //         if (mode === 'MP-CREATE') await create();
 
-                // onSelected(mode);
-            }
-        } else {
-            if (mode === 'MP-JOIN') await join();
-            if (mode === 'MP-CREATE') await create();
+        //         // onSelected(mode);
+        //     }
+        // } else {
+        //     if (mode === 'MP-JOIN') await join();
+        //     if (mode === 'MP-CREATE') await create();
 
-            // onSelected(mode);
-        }
+        //     // onSelected(mode);
+        // }
     }
 
     return (<div className='tictactoe-game-container-configurator'>

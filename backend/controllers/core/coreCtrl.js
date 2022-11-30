@@ -78,10 +78,8 @@ class Core {
         return new Promise((resolve, reject) => {
             const authHeader = req.headers['authorization']
 
-            console.log('auth header :', authHeader)
             let token = authHeader && authHeader.split(' ')[1]
 
-            console.log('token : ', token)
             if (token == null) return reject(401)
             // If many token on header, get the first only
 

@@ -113,6 +113,7 @@ const OnlineGame = ({ app, userApp, ...props }) => {
 
         socket.on('on-leave-room', (data) => {
             setConcurrentPlayerUsername(null)
+            restartGame();
         })
     }, [])
 

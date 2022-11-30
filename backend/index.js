@@ -43,19 +43,17 @@ CoreClass.init()
     app.use(routes.router);
   })
 
-const http = require('http').createServer(app);
+  const http = require('http').createServer(app);
 
-const io = require('socket.io')(http, {
-  cors: {
-    origin: socketCorsUrl['socket-cors-url'],
-    methods: socketCorsUrl['socket-cors-methods']
-  }
-});
-
-
-// Listen server
-const port = process.env.PORT || 5748;
-http.listen(4000, () => beautifierLogs('fgBlue', `This socketIo server is launched on port ${4000}`));
-app.listen(port, () => beautifierLogs('fgBlue', `This server is launched on port ${process.env.PORT || 5000}`));
+  // Listen server
+  const port = process.env.PORT || 5002;
+  const io = require('socket.io')(http.listen(port, () => beautifierLogs('fgBlue', `This server is launched on port ${process.env.PORT || 5002}`)), {
+    cors: {
+      origin: socketCorsUrl['socket-cors-url'],
+      methods: socketCorsUrl['socket-cors-methods']
+    },
+    httpCompression: true
+  });
+  
 
 module.exports.io = io;

@@ -8,11 +8,10 @@ const createGame = ({ io, socket, roomId }) => {
     }
 }
 
-const joinGame = async ({ io, socket, data }) => {
+const joinGame = async ({ io, socket, data, cb }) => {
     const rooms = getRooms(socket);
     const roomId = data && data.roomId ? data.roomId : undefined
 
-    console.log(data)
     if (!roomId) {
 
         for (let room of rooms) {
@@ -21,10 +20,8 @@ const joinGame = async ({ io, socket, data }) => {
             const roomPlayerLength = Array.from(room[1]).length;
 
             if (await roomName.match('room-') && roomPlayerLength < 2) {
-                console.log(roomName)
 
                 await socket.join(roomName);
-                socket.roomId = roomName;
                 await io.to(socket.id).emit('on-join', { roomId: roomName });
 
                 const sids = getRoomClients(socket, roomName);
@@ -32,6 +29,7 @@ const joinGame = async ({ io, socket, data }) => {
                     sids: [...sids],
                     roomId: roomName
                 })
+                cb(roomName)
                 io.to(roomName).emit('on-game-ready', { sid: [...sids][Math.floor(Math.random() * [...sids].length)] })
 
             }
@@ -40,16 +38,14 @@ const joinGame = async ({ io, socket, data }) => {
 
     if (socket && roomId && typeof getRoomClientsNumber(socket, roomId) !== 'undefined' && getRoomClientsNumber(socket, roomId) < 2) {
         socket.join(roomId);
-        socket.roomId = roomId;
         io.to(socket.id).emit('on-join', { roomId });
-        setTimeout(() => {
-            const sids = getRoomClients(socket, roomId);
-            io.to(roomId).emit('room-info', {
-                sids: [...sids],
-                roomId
-            })
-            io.to(roomId).emit('on-game-ready', { sid: [...sids][Math.floor(Math.random() * [...sids].length)] })
-        }, 1000)
+        const sids = getRoomClients(socket, roomId);
+        io.to(roomId).emit('room-info', {
+            sids: [...sids],
+            roomId
+        })
+        cb(roomId)
+        io.to(roomId).emit('on-game-ready', { sid: [...sids][Math.floor(Math.random() * [...sids].length)] })
 
     } else {
         io.to(socket.id).emit('on-join-error', { message: 'Unable to connect to this game!' });

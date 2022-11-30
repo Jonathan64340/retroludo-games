@@ -1,5 +1,5 @@
 import React from 'react';
 import socketio from "socket.io-client";
 
-export const socket = socketio.connect('http://localhost:4000');
+export const socket = socketio.connect(process.env.REACT_APP_SOCKET_HOSTNAME);
 export const SocketContext = React.createContext();

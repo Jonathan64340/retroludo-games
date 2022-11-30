@@ -30,9 +30,8 @@ const Wrapper = ({ children, onChangeUsername, app, userApp, ...props }) => {
         }, 0)
 
     const handleQuit = () => {
-        console.log(userApp)
         props.dispatch(setSelectedApp({ payload: { in_game: false }}));
-        socket.emit('leave-room', { roomId: userApp?.roomId })
+        socket.emit('leave-room', { })
         window.history.go(-1)
     }
 

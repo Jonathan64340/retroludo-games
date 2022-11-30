@@ -29,9 +29,15 @@ class GameCtrl extends Core {
             socket.on('join', (data) => {
 
                 if (data.roomId) {
-                    joinGame({ io, socket, data: { roomId: data.roomId } });
+                    joinGame({ io, socket, data: { roomId: data.roomId }, cb: (roomId) => {
+                        console.log('callback cb ' + roomId)
+                        socket.roomId = roomId
+                    } });
                 } else {
-                    joinGame({ io, socket, data: { } })
+                    joinGame({ io, socket, data: { }, cb: (roomId) => {
+                        console.log('callback cb ' + roomId)
+                        socket.roomId = roomId
+                    } })
                 }
             });
             socket.on('concurrentInfo', (data) => {
@@ -42,7 +48,6 @@ class GameCtrl extends Core {
                 }
             })
             socket.on('on-marker', (data) => {
-                console.log(data)
                 const roomClients = getRoomClients(socket, data.roomId);
                 if (!roomClients) return;
                 const turnSid = Array.from(roomClients).filter(client => client != data?.socket?.id)[0];
@@ -51,19 +56,24 @@ class GameCtrl extends Core {
             })
 
             socket.on('on-game-restart', (data) => {
-                console.log(data)
                 io.to(data.roomId).emit('on-game-restart', {})
             })
 
             socket.on('leave-room', (data) => {
-                console.log('leave room: ', data)
-                io.to(data.roomId).emit('on-leave-room', {
+                console.log('leave room: ', socket.roomId)
+                io.to(socket.roomId).emit('on-leave-room', {
                     socketId: socket.id
                 })
+                socket.leave(socket.roomId)
             })
 
             socket.on('disconnect', (raison) => {
                 console.log('disconnected ' + socket.id + ' + raison : ' + raison)
+                console.log('leave room on disconnect ' + socket.id + ' on room ' + socket.roomId)
+                io.to(socket.roomId).emit('on-leave-room', {
+                    socketId: socket.id
+                })
+                socket.leave(socket.roomId)
             })
 
         })

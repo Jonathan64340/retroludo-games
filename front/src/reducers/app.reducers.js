@@ -1,7 +1,7 @@
 import { SET_SELECTED_APP, SET_USER } from "../constants/app.constants"
 
 const initialState = {
-    base_url: "http://localhost:3000"
+    base_url: process.env.REACT_APP_BASE_URL
 }
 
 export const app = (state = initialState, action) => {
