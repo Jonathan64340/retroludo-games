@@ -23,7 +23,7 @@ class GameCtrl extends Core {
             socket.on('create', (data) => {
                 // Get all rooms available length
                 let roomId = Array.from(socket.adapter.rooms.entries()).length + 1;
-                socket.roomId = roomId;
+                socket.roomId = `room-${roomId}`;
                 createGame({ io, socket, roomId: `room-${roomId}` });
             });
             socket.on('join', (data) => {
