@@ -165,11 +165,11 @@ const OnlineGame = ({ app, userApp, ...props }) => {
     }
 
     const handleSetCase = (payload) => {
-        handleMarker(turn, payload?.point, payload?.aiPlay, payload?.event);
+        !endGame && handleMarker(turn, payload?.point, payload?.aiPlay, payload?.event);
     }
 
     const handleSetCaseOther = (payload) => {
-        handleMarkerOtherPlayer(turn, payload?.point, payload?.aiPlay, payload?.event);
+        !endGame && handleMarkerOtherPlayer(turn, payload?.point, payload?.aiPlay, payload?.event);
     }
 
 
