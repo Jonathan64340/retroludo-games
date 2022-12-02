@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { SocketContext } from '../../../utils/socket';
 import { checkPossibleMarker, checkWin } from '../Core/engine';
 import { setSelectedApp } from '../../../actions/app.actions';
-import { store } from '../../../index'
 
 const OnlineGame = ({ app, userApp, ...props }) => {
     const socket = useContext(SocketContext);
@@ -138,10 +137,8 @@ const OnlineGame = ({ app, userApp, ...props }) => {
         }
     }
 
-    const handleMarker = (turn, point, aiPlay, ev) => {
-        console.log(roomId)
+    const handleMarker = (turn, point, ev) => {
         if (!endGame) {
-            console.log(store?.getState())
             if (ev?.currentTarget && turn === socket?.id) {
                 if (!ev?.currentTarget?.classList?.contains('fill')) {
                     ev.currentTarget.innerHTML = `<span class="pointer">${user[turn]}</span>`;
