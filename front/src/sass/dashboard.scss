@@ -56,6 +56,24 @@
         position: relative;
         justify-content: center;
 
+        .icon-online-player {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: absolute;
+            top: 55px;
+            right: 5px;
+            gap: 4px;
+            font-size: .7rem;
+            background-color: rgba(35, 45, 48, 0.687);
+            padding: 4px 8px;
+            border-radius: 8px;
+            color: white;
+            &-svg {
+                font-size: 10px;
+            }
+        }
+
         &:hover {
             cursor: pointer;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.486);

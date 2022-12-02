@@ -111,8 +111,17 @@ const OnlineGame = ({ app, userApp, ...props }) => {
             restartGame()
         })
 
-        socket.on('on-leave-room', (data) => {
+        socket.on('on-leave-room', () => {
             setConcurrentPlayerUsername(null)
+            props.dispatch(setSelectedApp({
+                payload: {
+                    ...app?.selected_game,
+                    score: {
+                        me: 0,
+                        ai: 0
+                    }
+                }
+            }))
             restartGame();
         })
     }, [])

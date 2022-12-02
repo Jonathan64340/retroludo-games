@@ -37,6 +37,12 @@ router.post('/api/v1/joinGame', Core.authenticateJWT, (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
+router.get('/api/v1/countPlayers', (req, res) => {
+  return res.send({
+    tictactoe: Game.countPlayers()
+  })
+})
+
 // Auth
 router.post('/api/v1/auth/authenticate', (req, res) => {
   return Auth.authenticate()

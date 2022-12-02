@@ -7,7 +7,8 @@ const gameList = [
         title: 'TicTacToe',
         sub_title: 'Multiplayer',
         icon: 'images/tictactoe.png',
-        path: '/tictactoe'
+        path: '/tictactoe',
+        code: 'tictactoe'
     }
 ];
 

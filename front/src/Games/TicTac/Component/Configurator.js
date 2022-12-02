@@ -2,8 +2,6 @@ import React, { useContext, useEffect } from 'react';
 import { useLocation, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'underscore';
-import { authenticate } from '../../../endpoints/app/auth/auth';
-import { getTokenAndRefreshToken, persistTokenAndRefreshToken } from '../../../utils/persist.login';
 import { SocketContext } from '../../../utils/socket';
 import { setUserApp } from '../../../actions/app.actions';
 

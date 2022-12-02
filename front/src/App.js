@@ -6,9 +6,34 @@ import notFoundPage from './pages/not-found/not-found.page';
 import { setSelectedApp, setUserApp } from './actions/app.actions';
 import Wrapper from './components/wrapper/Wrapper';
 import { socket, SocketContext } from './utils/socket';
+import { countPlayers } from './endpoints/app/games/tictactoe';
+import fontawesome from '@fortawesome/fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/fontawesome-free-solid';
+
+fontawesome.library.add(faUser);
 
 const App = ({ app, userApp, ...props }) => {
     const [context, setContext] = useState(null);
+    const [players, setPlayers] = useState([]);
+
+    useEffect(() => {
+        countPlayers()
+            .then(data => setPlayers(data));
+
+        socket.on('on-update-players', (data) => {
+            setPlayers(data)
+        });
+
+        socket.on('disconnect', () => {
+            alert('Your are lost connection! Go to the main menu');
+            window.location.href = '/'
+        })
+
+        return () => {
+            socket.off('on-update-players')
+        }
+    }, [])
 
     const DisplayGame = ({ replaceUrlBy, history }) => {
 
@@ -30,6 +55,10 @@ const App = ({ app, userApp, ...props }) => {
                 {
                     gameList.map((game, index) => (
                         <div className='card-container' key={index} onClick={() => goTo({ ...game })}>
+                            <div className='icon-online-player'>
+                                <FontAwesomeIcon icon={"user"} className='icon-online-player-svg' />
+                                <span className='player-count'>{players[game?.code]}</span>
+                            </div>
                             <img src={`${app?.base_url}/${game.icon}`} alt={game?.title} className='card-container-icon' />
                             <span className='card-container-title'>{game?.title}</span>
                         </div>

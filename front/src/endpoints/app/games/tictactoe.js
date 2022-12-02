@@ -13,3 +13,10 @@ export const joinGame = (id) => {
         .then(({ data }) => data)
         .catch(err => new Error(err));
 }
+
+export const countPlayers = () => {
+    return axios    
+        .get(`${process.env.REACT_APP_HOSTNAME}/api/v1/countPlayers`)
+        .then(({ data }) => data)
+        .catch(err => new Error(err))
+}
